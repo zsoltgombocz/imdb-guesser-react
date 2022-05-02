@@ -1,10 +1,11 @@
-import React from 'react'
-import * as state from '../store/stateImports';
+import React, { useContext } from 'react'
+import { LoaderContext } from '../states/LoaderContext';
 
 const Loader = () => {
-    const loaderState = state.useSelector((state) => state.loader);
+    const [getLoader,] = useContext(LoaderContext);
+
   return (
-      (loaderState.show) ? 
+      (getLoader) ? 
       <div className={'z-1000 navbar-glass full-cover d-flex '}>
           <div className={'d-flex flex-fill bg-blur justify-content-center align-items-center'}>
           <svg className={'col-6 col-md-3'} version="1.1" id="L9" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"

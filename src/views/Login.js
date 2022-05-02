@@ -1,14 +1,20 @@
-import { React, useState } from 'react'
+import { React, useContext, useState } from 'react'
 import Button from '../components/Button';
 import UserService from '../services/UserService';
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { actionCreators } from '../store/actions';
 import CustomInput from '../components/CustomInput';
 import { usernameRule, passwordRuleLogin } from './formValidationRules/Common';
+import { LoaderContext } from '../states/LoaderContext';
+import { UserContext } from '../states/UserContext';
+import { AlertContext } from '../states/AlertContext';
 
 const Login = () => {
+  const [,setLoader] = useContext(LoaderContext);
+  const [,setUser] = useContext(UserContext);
+  const [,setAlert] = useContext(AlertContext);
+
+  const navigate = useNavigate();
+
   const usernameValidationRules = usernameRule;
   const passwordValidationRules = passwordRuleLogin;
   const initialState = {
@@ -34,33 +40,27 @@ const Login = () => {
     message: '',
     show: false
   });
-
-  const navigate = useNavigate();
-
-  const dispatch = useDispatch();
-
-  const {loginUser} = bindActionCreators(actionCreators, dispatch);
-
-  const {showLoader, hideLoader, showAlert} = bindActionCreators(actionCreators, dispatch);
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     if(checkValidation) {
-      showLoader();
+      setLoader(true);
       try{
         let response = await UserService.Login(_username.value, _password.value);
-        loginUser({username: _username.value});
+        setUser({loggedIn: true, username: _username.value});
         navigate('/', { replace: true });
-        showAlert({message: response.data.message, type: 1});
+        console.log(response);
+        setAlert({message: response.data.message, type: 1, show: true});
       }catch(error) {
-        showAlert({message: error.message || error.statusText, type: 2});
+        setAlert({message: error.message || error.statusText, type: 2, show: true});
         const errors = error?.data?.error?.errors || false;
         if(errors) {
           setErrorsFromServer(errors)
         }
       }
-      hideLoader(); 
+      setLoader(false); 
     }
   }
 

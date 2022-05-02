@@ -1,11 +1,13 @@
 import { React, useState } from 'react'
+import { useLocation } from 'react-router-dom';
 
 const Footer = () => {
   const [screen, setScreen] = useState(window.innerWidth);
-
+  const location = useLocation();
   window.addEventListener('resize', () => setScreen(window.innerWidth));
-
+  const isGame = location.pathname === '/game';
   return (
+    !isGame ? 
     <footer className={`bg-white text-center tricky-bg ${(screen < 490) ? 'animate__animated animate__slideOutDown' : 'animate__animated animate__slideInUp'}`}>
         <div className={'container d-flex flex-column justify-content-center'}>
             <span className={'mt-2 mb-2 headline'}>How does the game work?</span>
@@ -14,6 +16,8 @@ const Footer = () => {
             </p>
         </div>
     </footer>
+    :
+    <></>
   )
 }
 

@@ -4,17 +4,26 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter as Router} from 'react-router-dom'
-import {Provider} from 'react-redux';
-import store from './store/store';
+import { LoaderProvider } from './states/LoaderContext';
+import { UserProvider } from './states/UserContext'
+import { AlertProvider } from './states/AlertContext'
+import { GameProvider } from './states/GameContext'
+import Game from './views/Game';
 
 ReactDOM.render(
-  <Provider store={store}>
+  <LoaderProvider>
+  <UserProvider>
+  <AlertProvider>
+  <GameProvider>
   <Router>
   <React.StrictMode>
     <App />
   </React.StrictMode>
   </Router>
-  </Provider>,
+  </GameProvider>
+  </AlertProvider>
+  </UserProvider>
+  </LoaderProvider>,
   document.getElementById('root')
 );
 

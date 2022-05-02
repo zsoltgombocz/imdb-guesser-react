@@ -12,7 +12,12 @@ const POST = async (url, payload=null) => {
     return await axios.post(api_url + url, payload);
 }
 
+const setToken = (token) => {
+    axios.defaults.headers.common['authorization'] = 'Bearer ' + token;
+}
+
 module.exports = {
     GET,
-    POST
+    POST,
+    setToken
 }

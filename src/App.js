@@ -1,57 +1,55 @@
 import './App.css';
-import {Route, Routes, useLocation, useNavigate} from 'react-router-dom';
+import {Route, Routes, useLocation} from 'react-router-dom';
 import LoginView from './views/Login';
 import RegisterView from './views/Register';
-import Navbar from './components/Navbar';
+import Header from './components/Header';
 import Home from './views/Home';
 import Footer from './components/Footer';
 import FullBodyImages from './components/FullBodyImages';
 import UserService from './services/UserService';
-import {useEffect} from 'react';
-import {useSelector, useDispatch} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {actionCreators} from './store/actions';
+import {useContext, useEffect} from 'react';
 import ProtectedRoute from './components/ProtectedRoute';
 import Alert from './components/Alert';
 import Loader from './components/Loader';
+import Game from './views/Game';
+import { UserContext } from './states/UserContext';
+import useUserStatus from './components/hooks/useUserStatus';
 
 function App() {
   let routesWithBg = ['/', '/login', '/register', '/leaderboard', '/about'];
+  const [,setUser] = useContext(UserContext);
   const location = useLocation();
 
-  const userState = useSelector((state) => state.user);
-
-  const dispatch = useDispatch();
-
-  const {loginUser} = bindActionCreators(actionCreators, dispatch);
-
+  useUserStatus();
+  
   useEffect(() => {
     const recoverUser = async () => {
       let username = await UserService.recoverUser();
       if(username) {
-        loginUser({username});
+       setUser({loggedIn: true, username});
       }
     }
 
     recoverUser();
   }, [])
-  
 
   return (  
       <div className={'d-flex h-max flex-column'}>
       <Alert />
-      <Navbar />
+      <Header />
       <Loader />
 
       <div className={'z-999 d-flex flex-grow-1 flex-fill'}>
       <Routes>
           <Route path='/' exact element={<Home />}></Route>
-          <Route rule={{login: true}} path='/login' element={
+
+          <Route path='/login' element={
             <ProtectedRoute rule={{loggedIn: false}} element={LoginView} />
           }></Route>
-          <Route rule={{login: true}} path='/register' element={
+          <Route path='/register' element={
             <ProtectedRoute rule={{loggedIn: false}} element={RegisterView} />
           }></Route>
+          <Route path={'/game'} element={<Game />}></Route>
       </Routes>
       </div>
 

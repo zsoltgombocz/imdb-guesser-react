@@ -1,14 +1,16 @@
-import { React, useState, useEffect} from 'react'
+import { React, useState, useContext} from 'react'
 import Button from '../components/Button';
 import UserService from '../services/UserService';
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
 import CustomInput from '../components/CustomInput';
 import { usernameRule, passwordRuleRegister } from './formValidationRules/Common';
-import { bindActionCreators } from 'redux';
-import { actionCreators } from '../store/actions';
+import { LoaderContext } from '../states/LoaderContext';
+import { AlertContext } from '../states/AlertContext';
 
 const Register = () => {
+  const [,setLoader] = useContext(LoaderContext);
+  const [,setAlert] = useContext(AlertContext);
+  const navigate = useNavigate();
   const usernameValidationRules = usernameRule;
   const passwordValidationRules = passwordRuleRegister;
   const initialState = {
@@ -39,30 +41,24 @@ const Register = () => {
     show: false
   });
 
-  const navigate = useNavigate();
-
-  const dispatch = useDispatch();
-
-  const {showLoader, hideLoader, showAlert} = bindActionCreators(actionCreators, dispatch);
-
   const handleRegister = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     if(checkValidation) {
-      showLoader();
+      setLoader(true);
       try{
         let response = await UserService.Register(_username.value, _password.value);
         navigate('/login', { replace: true });
-        showAlert({message: response.data.message, type: 1});
+        setAlert({message: response.data.message, type: 1, show: true});
       }catch(error) {
-        showAlert({message: error.message || error.statusText, type: 2});
+        setAlert({message: error.message || error.statusText, type: 2, show: true});
         const errors = error?.data?.error?.errors || false;
         if(errors) {
           setErrorsFromServer(errors)
         }
       }
-      hideLoader(); 
+      setLoader(false); 
     }
   }
 
